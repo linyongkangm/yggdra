@@ -10,5 +10,4 @@ func Serve(w http.ResponseWriter, r *http.Request) {
 	} else {
 		handleHttp(w, r)
 	}
-
 }
