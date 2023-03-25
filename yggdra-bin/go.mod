@@ -1,4 +1,4 @@
-module yggdra-bin
+module yggdra
 
 go 1.20
 
