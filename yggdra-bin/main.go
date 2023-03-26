@@ -1,12 +1,11 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
-	"path"
+	"yggdra/ca"
 	"yggdra/config"
+	"yggdra/server"
 	"yggdra/utils"
 )
 
@@ -21,21 +20,15 @@ func initAppDataDir() {
 	}
 	if exists, _ := utils.PathExists(config.CERTS_DIR); !exists {
 		os.MkdirAll(config.CERTS_DIR, os.ModePerm)
-		content := []byte("测试1\n测试3\n")
-		err := ioutil.WriteFile(path.Join(config.CERTS_DIR, "test.txt"), content, 0644)
-		if err != nil {
-			fmt.Println(err)
-		}
+		ca.GenCertificate()
 	}
 
 }
 
 func main() {
-	port := "9898"
-	listenAdress := ":" + port
-
-	// server.Serve(listenAdress)
-	fmt.Println(listenAdress, config.HOME_DIR, config.APP_DATA_DIR)
 
 	initAppDataDir()
+	port := "9898"
+	listenAdress := ":" + port
+	server.Serve(listenAdress)
 }

@@ -5,13 +5,14 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"yggdra/ca"
 	"yggdra/proxy"
 )
 
 var logger = log.New(os.Stdout, "httpsproxy:", log.Llongfile|log.LstdFlags)
 
 func Serve(listenAdress string) {
-	cert, err := genCertificate()
+	cert, err := ca.GetTLSConfig()
 	if err != nil {
 		logger.Fatal(err)
 	}
