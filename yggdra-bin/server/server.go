@@ -8,7 +8,7 @@ import (
 	"yggdra/proxy"
 )
 
-var logger = log.New(os.Stderr, "httpsproxy:", log.Llongfile|log.LstdFlags)
+var logger = log.New(os.Stdout, "httpsproxy:", log.Llongfile|log.LstdFlags)
 
 func Serve(listenAdress string) {
 	cert, err := genCertificate()
@@ -20,8 +20,8 @@ func Serve(listenAdress string) {
 		Addr:      listenAdress,
 		TLSConfig: &tls.Config{Certificates: []tls.Certificate{cert}},
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			logger.Print(2, r)
 			proxy.Serve(w, r)
-			logger.Print("HandlerFunc", r)
 		}),
 	}
 
