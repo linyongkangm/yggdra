@@ -2,10 +2,14 @@ package proxy
 
 import (
 	"io"
+	"log"
 	"net"
 	"net/http"
+	"os"
 	"time"
 )
+
+var logger = log.New(os.Stdout, "proxy:", log.Llongfile|log.LstdFlags)
 
 func handleHttps(w http.ResponseWriter, r *http.Request) {
 	destConn, err := net.DialTimeout("tcp", r.Host, 60*time.Second)

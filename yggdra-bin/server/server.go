@@ -21,7 +21,6 @@ func Serve(listenAdress string) {
 		Addr:      listenAdress,
 		TLSConfig: &tls.Config{Certificates: []tls.Certificate{cert}},
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			logger.Print(2, r)
 			proxy.Serve(w, r)
 		}),
 	}
