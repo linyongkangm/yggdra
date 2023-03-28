@@ -26,7 +26,6 @@ func initAppDataDir() {
 }
 
 func main() {
-
 	initAppDataDir()
 	port := "9898"
 	listenAdress := ":" + port

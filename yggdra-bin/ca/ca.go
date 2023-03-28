@@ -92,31 +92,14 @@ func GenmMitMCertificateSign(commonName string) (csr *x509.Certificate) {
 	return
 }
 
-func GenMitMCertificate(commonName string) {
+func GenMitMCertificate(commonName string) (cert *x509.Certificate, key *rsa.PrivateKey) {
 	rootCsrBytes, _ := ioutil.ReadFile(config.ROOT_CA_CRT)
 	rootCsr, _ := x509.ParseCertificate(rootCsrBytes)
 	rootKeyBytes, _ := ioutil.ReadFile(config.ROOT_CA_KEY)
 	rootKey, _ := x509.ParsePKCS1PrivateKey(rootKeyBytes)
 	csr := GenmMitMCertificateSign(commonName)
-	key := GenPrivateKey()
+	key = GenPrivateKey()
 	der, _ := x509.CreateCertificate(rand.Reader, csr, rootCsr, key.Public(), rootKey)
-	//4.将得到的证书放入pem.Block结构体中
-	block := pem.Block{
-		Type:    "CERTIFICATE",
-		Headers: nil,
-		Bytes:   der,
-	}
-	crtFile, _ := os.Create(config.ROOT_CA_CRT)
-	defer crtFile.Close()
-	pem.Encode(crtFile, &block)
-
-	//6.将私钥中的密钥对放入pem.Block结构体中
-	block = pem.Block{
-		Type:    "RSA PRIVATE KEY",
-		Headers: nil,
-		Bytes:   x509.MarshalPKCS1PrivateKey(key),
-	}
-	keyFile, _ := os.Create(config.ROOT_CA_KEY)
-	defer keyFile.Close()
-	pem.Encode(keyFile, &block)
+	cert, _ = x509.ParseCertificate(der)
+	return
 }
