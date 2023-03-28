@@ -12,6 +12,7 @@ import (
 var logger = log.New(os.Stdout, "proxy:", log.Llongfile|log.LstdFlags)
 
 func handleHttps(w http.ResponseWriter, r *http.Request) {
+	logger.Println("handleHttps")
 	destConn, err := net.DialTimeout("tcp", r.Host, 60*time.Second)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)

@@ -20,7 +20,7 @@ func initAppDataDir() {
 	}
 	if exists, _ := utils.PathExists(config.CERTS_DIR); !exists {
 		os.MkdirAll(config.CERTS_DIR, os.ModePerm)
-		ca.GenCertificate()
+		ca.GenRootCertificate()
 	}
 
 }

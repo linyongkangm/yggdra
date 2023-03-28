@@ -15,6 +15,61 @@ import (
 	"yggdra/config"
 )
 
+// 生成根证书签名
+func GenRootCertificateSign() (rootCsr *x509.Certificate) {
+	rootCsr = &x509.Certificate{
+		Version:      3,
+		SerialNumber: big.NewInt(time.Now().Unix()),
+		Subject: pkix.Name{
+			Country:            []string{"CN"},
+			Province:           []string{"GuangZhou"},
+			Locality:           []string{"GuangZhou"},
+			Organization:       []string{"Yggdra"},
+			OrganizationalUnit: []string{"YggdraProxy"},
+			CommonName:         "Yggdra Root CA",
+		},
+		NotBefore:             time.Now(),
+		NotAfter:              time.Now().AddDate(10, 0, 0),
+		BasicConstraintsValid: true,
+		IsCA:                  true,
+		MaxPathLen:            1,
+		MaxPathLenZero:        false,
+		KeyUsage:              x509.KeyUsageCertSign | x509.KeyUsageCRLSign,
+	}
+	return
+}
+
+// 生成私钥
+func GenPrivateKey() (key *rsa.PrivateKey) {
+	key, _ = rsa.GenerateKey(rand.Reader, 2048)
+	return
+}
+
+func GenRootCertificate() {
+	rootCsr := GenRootCertificateSign()
+	rootKey := GenPrivateKey()
+	rootDer, _ := x509.CreateCertificate(rand.Reader, rootCsr, rootCsr, rootKey.Public(), rootKey)
+	//4.将得到的证书放入pem.Block结构体中
+	block := pem.Block{
+		Type:    "CERTIFICATE",
+		Headers: nil,
+		Bytes:   rootDer,
+	}
+	crtFile, _ := os.Create(config.ROOT_CA_CRT)
+	defer crtFile.Close()
+	pem.Encode(crtFile, &block)
+
+	//6.将私钥中的密钥对放入pem.Block结构体中
+	block = pem.Block{
+		Type:    "RSA PRIVATE KEY",
+		Headers: nil,
+		Bytes:   x509.MarshalPKCS1PrivateKey(rootKey),
+	}
+	keyFile, _ := os.Create(config.ROOT_CA_KEY)
+	defer keyFile.Close()
+	pem.Encode(keyFile, &block)
+}
+
 func GenCertificate() {
 	max := new(big.Int).Lsh(big.NewInt(1), 128)
 	serialNumber, _ := rand.Int(rand.Reader, max)
